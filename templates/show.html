@@ -1,0 +1,187 @@
+<!DOCTYPE html static "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>武汉长乐教育PHP课程-博客系统开发</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="header">
+    <div id="innerHeader">
+        <div id="blogLogo"></div>
+        <div class="blog-header">
+            <div class="blog-title"><IMG SRC="../static/images/logo.png"  style="border:1px solid gray" BORDER="0" ALT="" align="absmiddle"> <a href="http://www.whphp.com">WHPHP</a></div>
+            <div class="blog-desc">武汉长乐教育PHP培训</div>
+        </div>
+        <div id="menu">
+            <ul>
+                <li><a href="index.php">日志首页</a></li>
+                <li><a href="add.php">撰写日志</a></li>
+                <li><a href="">官方网站</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="mainWrapper">
+    <div id="content" class="content">
+        <div id="innerContent">
+            <div class="article-top">
+                <div class="prev-article"><a href="#">上一篇博文</a></div>
+                <div class="next-article"><a href="#">上一篇博文</a></div>
+            </div>
+
+
+
+
+
+
+<?php
+
+                echo "<div class='textbox-title'>";
+                echo"<h4>";
+                echo"<img src='../static/Images/icon_ctb.gif' width='11' height='11' border='0'
+                              align='absmiddle'>  ";
+                echo $row['title'];
+                echo"</h4>";
+                echo"<div style='margin-top:20px;'>";
+                echo"</div>";
+                echo"<div class='textbox-label'>";
+                echo"[<span style='color:gray;font-weight:normal'>2015-9-16 15:33:33 发表在 <a href='#'>新闻</span>  ]";
+                echo"</div>";
+                echo"</div>";
+                echo"<div class='textbox-content'>";
+                echo $row['content'];
+                echo"</div>";
+
+        ?>
+            <div class="textbox-bottom"> <img src="../static/images/cm_t_ArtRank2.gif" width="12" height="12" border="0"  align=""> <a href="#reply">我有话要说</a></div>
+            <div class="textbox-urls" align="right"></div>
+            <div class="no-comment-box"> [ 管理：<a href="__URL__/edit/id/{$vo.id}" target="_blank">编辑日志</a> <a href="#">删除日志</a> ]</div>
+            <div id="comments">
+                <?php
+                    $result4 = mysql_query("select * from comm where aid =$id ");
+
+                    while($row1 = mysql_fetch_array($result4)){
+                        echo "<div class='commentbox'>";
+
+                        echo "<div class='commentbox-title' > <a>".$row1['author']."</a> 发表的评论 <span style='color:gray'>[ 2014-9-11 15:20:20 ]</span>";
+                        echo "<a href=show.php?id=".$id."&action=del&del_id=".$row1["id"].">删除评论</a></div>";
+                        echo "<div class='commentbox-content'>".$row1['content']."</div>";
+                        echo "</div>";
+                    }
+                ?>
+
+            </div>
+            <a name="reply"></a>
+            <div id="comment">
+                <div id="result" class="result none"></div>
+
+
+
+
+                <form method="post" id="form1" >
+                    <table cellpadding=3 cellspacing=3 width="450px">
+                        <tr>
+                            <td class="tRight tTop"></td>
+                            <td class="tLeft">用户名：<input type="text" namE="author" class="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="tRight tTop"></td>
+                            <td class="tLeft"><html:editor type="ubb"  id="editor" width="450px" height="185px" name="content"></html:editor></td>
+                        </tr>
+                        <tr>
+                            <td ></td>
+                            <td class="center">
+                                <input type="hidden" name="ajax" value="1">
+                                <input type="hidden" name="module" value="Blog">
+                                <textarea cols="70" rows="6" name="a"></textarea>
+                                <br />
+                                <div class="fLeft hMargin">
+                                    <input type="submit" value="发表评论" class="submit small">
+                                </div>
+                            </TD>
+                        </tr>
+                    </TABLE>
+                </form>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+        <div id="sidebar" class="sidebar">
+        <div id="innerSidebar">
+            <div id="panelSearch" class="panel">
+                <div id="panelStats" class="panel">
+                    <h5>统计数据</h5>
+                    <div class="panel-content">
+                        日志总数：<span style="color:#CC9933">12</span><br />
+                        阅读总数：<span style="color:#6699FF">30</span><br />
+                        评论总数：<span style="color:#FF9900">50</span><br />
+                    </div>
+                </div>
+                <h5 >日志分类 </h5>
+                <div class="panel-content">
+                    <ul id="category">
+                        <li>
+                            <div class="fLeft" >
+                                <input TYPE="text" id="categoryName" class="text" NAME="name">
+                            </div>
+                            <input TYPE="button" value="增 加" class="submit hMargin small">
+                            <br style="clear:both;float:auto"/>
+                        </li>
+                        <volist name="category" id="vo">
+                            <li>
+                                <img src="../static/images/folder.gif" width="18" height="18" border="0" alt="" align="absmiddle">
+                                <a href="#">新闻</a>
+                                <span>(33)</span>
+                                <img src="../static/images/del.gif" style="cursor:pointer" width="20" height="20" border="0" alt="" >
+                            </li>
+                            <li>
+                                <img src="../static/images/folder.gif" width="18" height="18" border="0" alt="" align="absmiddle">
+                                <a href="#">娱乐</a>
+                                <span>(33)</span>
+                                <img src="../static/images/del.gif" style="cursor:pointer" width="20" height="20" border="0" alt="" >
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+            <div id="panelSearch" class="panel">
+                <h5 >最新日志</h5>
+                <div class="panel-content">
+                    <ul>
+                        <li>
+                            <img src="../static/images/icon_ctb.gif" width="11" height="11" border="0" alt="" align="absmiddle"/>
+                            <a href="#" title="学PHP真有趣">学PHP真有趣</a>
+                            <sup style="color:silver;font-size:12px">
+                                [<span style="color:#3366CC">20<!-- 阅读数 --></span> |<span style="color:#FF6600"> 15<!-- 评论数 --></span>]
+                            </sup>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="panelSearch" class="panel">
+                <h5 >最新评论</h5>
+                <div class="panel-content">
+                    <ul>
+                        <volist id="vo" name="lastComments">
+                            <li>
+                                <img src="../static/images/Comment.gif" width="9" height="9" border="0" alt="" align="absmiddle">
+                                <a href="#"> <span style="color:#3366CC">Aaron</span></a>：
+                                <a href="#" title="">您的博文写得好好呢！</a>
+                        </volist>
+                    </ul>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+<!-- 版权信息区域 -->
+<div id="footer" class="footer" >
+    <div id="innerFooter">Powered by 武汉长乐教育 |  <a target="_blank" href="http://www.whphp.com">whphp</a></div>
+</div>
+</body>
+</html>

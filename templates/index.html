@@ -1,0 +1,185 @@
+<!DOCTYPE html static "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>武汉长乐教育PHP课程-博客系统开发</title>
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="header">
+    <div id="innerHeader">
+        <div id="blogLogo"></div>
+        <div class="blog-header">
+            <div class="blog-title"><IMG SRC="../static/images/logo.png"  style="border:1px solid gray" BORDER="0" ALT="" align="absmiddle"> <a href="http://www.whphp.com">WHPHP</a></div>
+            <div class="blog-desc">武汉长乐教育PHP课程-博客系统开发</div>
+        </div>
+        <div id="menu">
+            <ul>
+                <li><a href="index.php">日志首页</a></li>
+                <li><a href="add.php">撰写日志</a></li>
+                <li><a href="">官方网站</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--中间部分-->
+<div id="mainWrapper">
+    <div id="content" class="content">
+        <div id="innerContent">
+            <div class="announce text" style="border:1px solid silver;padding:5px;font-size:14px;">
+                <h4 style="color:#FF3300"><img src="../static/images/wav.gif" width="18" height="18" border="0" alt="" align="absmiddle"> 简单的BLOG示例</h4>
+                本示例Blog包括日志的新增、修改、列表、统计、评论和删除等功能,可以作为入门PHP的绝佳示例。<P>请按照下面步骤操作，增加分类、添加日志、增加评论。
+            </div>
+            <!--
+            <div class="article-top">
+                <div class="view-mode">浏览模式: <a href="?mode=normal">普通</a> | <a href="?mode=list">列表</a></div><div class="pages">{$page}</div>
+            </div>
+            -->
+
+            <div>
+                <?php
+                    $result = mysql_query("select * from article order by id desc");
+                    while($row = mysql_fetch_array($result)){
+
+                        echo "<div class='textbox-title'>";
+                        echo"<h4>";
+                        echo"<img src='../static/images/icon_point2.gif' width='13' height='13' border='0'
+                                  align='absmiddle'>";
+                        echo"<a href='show.php?id=$row[id]'>".$row['title']."</a>";
+                        echo"</h4>";
+                        echo"<div class='textbox-label'>";
+
+                        $result2 = mysql_query("select * from category where id = '$row[cid]'");
+                        $cate = mysql_fetch_array($result2);
+                        $cate_name = $cate["name"];
+
+                        echo"[ 2014-9-12 15:30:20  | <a href='#'>".$cate_name." </a>]";
+                        echo"</div>";
+                        echo"</div>";
+                        echo"<div class='textbox-content'>".$row['content']."</div>";
+                        echo"<div class='textbox-bottom'>";
+                        echo"[ 管理：<a href='edit.php?id=$row[id]'>编辑</a> <a href='index.php?action=del_art&del_id=$row[id]'>删除</a> ]";
+                        $num = num_rows("select * from comm where aid=$row[id]");
+                        $num1 = coun_rows("select * from article where id=$row[id]");
+                        $views = $num1["views"];
+                        echo"| <a href='show.php?id=$row[id]'>评论:".$num."</a> | 浏览:".$views;
+                        echo"</div>";
+
+                    }
+                 ?>
+            </div>
+            <!--
+            <div class="article-bottom">
+                <div class="pages">{$page}
+                </div>
+            </div>
+            -->
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <div id="innerSidebar">
+            <div id="panelSearch" class="panel">
+                <div id="panelStats" class="panel">
+                    <h5>统计数据</h5>
+                    <div class="panel-content">
+
+
+                        <?php
+                        $num_rizhi = num_rows("select * from article");
+                        $num_pinglun =num_rows("select * from comm");
+                       $num_sum = mysql_fetch_array(mysql_query("select sum(views) as s from article "));
+                        echo"日志总数：<span style='color:#CC9933'>".$num_rizhi."</span><br />";
+                        echo"阅读总数：<span style='color:#6699FF'>".$num_sum["s"]."</span><br />";
+                        echo"评论总数：<span style='color:#FF9900'>".$num_pinglun."</span><br />";
+                        ?>
+
+
+                    </div>
+                </div>
+                <h5 >日志分类 </h5>
+                <div class="panel-content">
+                    <ul id="category">
+
+
+
+                        <li>
+                            <form action="" method="post">
+                            <div class="fLeft" >
+                                <input TYPE="text" id="categoryName" class="text" NAME="name">
+                            </div>
+                            <input TYPE="submit" value="增 加" class="submit hMargin small">
+                            <br style="clear:both;float:auto"/>
+                            </form>
+                        </li>
+
+
+                        <?php
+                       $result = mysql_query("select * from category");
+
+
+                           while($row = mysql_fetch_array($result)){
+                           $num2 = num_rows("select * from article where cid=$row[id]");
+
+                                echo "<li>";
+                                echo "<img src='../static/images/folder.gif' width='18' height='18'
+                                         border='0'  align='absmiddle'>";
+                                echo "<a href='#'>".$row['name']."</a>";
+                                echo " <span>".$num2."</span>";
+                                echo " <a href='index.php?action=del_cate&del_id=$row[id]'><img src='../static/images/del.gif' style='cursor:pointer' width='20'
+                                        height='20' border='0'></a>";
+                                echo "</li>";
+                            }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+            <div id="panelSearch" class="panel">
+                <h5 >最新日志</h5>
+                <div class="panel-content">
+                    <ul>
+                        <?php
+                            $result = mysql_query("select * from article order by id desc limit 0,5");
+                            while($row = mysql_fetch_array($result)){
+						echo"<li>";
+                        echo"<img src='../static/images/icon_ctb.gif' width='11' height='11' border='0'  align='absmiddle'/>";
+                        echo"<a href='#' >".$row['title']."</a>";
+                        echo"<sup style='color:silver;font-size:12px'>";
+                        $num = num_rows("select * from comm where aid=$row[id]");
+                        $num1 = coun_rows("select * from article where id=$row[id]");
+                        $views = $num1["views"];
+                        echo"[<span style='color:#3366CC'>".$num."<!-- 阅读数 --></span> |<span style='color:#FF6600'>".$views."<!-- 评论数 --></span>]";
+                        echo"</sup>";
+                        echo"</li>";
+                            }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+            <div id="panelSearch" class="panel">
+                <h5 >最新评论</h5>
+                <div class="panel-content">
+                    <ul>
+                        <?php
+                            $result = mysql_query("select * from comm order by id desc limit 0,5");
+                            while($row = mysql_fetch_array($result)){
+                            echo"<li>";
+                        echo"<img src='../static/images/Comment.gif' width='9'
+                                  height='9' border='0' align='absmiddle'>";
+                        echo"<a href='#'> <span style='color:#3366CC'>".$row['author']."</span></a>";
+                        echo"<a href='#' >".$row['content']."</a>";
+                        echo"</li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+<!-- 版权信息区域 -->
+<div id="footer" class="footer" >
+    <div id="innerFooter">Powered by 武汉长乐教育 |  <a target="_blank" href="http://www.whphp.com">whphp</a></div>
+</div>
+</body>
+</html>
