@@ -22,12 +22,27 @@ mysql_query("set names utf8");
 mysql_select_db('my_blog');
 
 /**
+ * 调试函数
+ * @param $arr
+ */
+function dump($arr) {
+    if(is_array($arr)) {
+        echo '<pre>';
+        print_r($arr);
+        echo '</pre>';
+    } else {
+        echo $arr;
+    }
+}
+
+/**
  * 跳转函数
  * @param $arr
  */
 function jump($url, $msg="操作已经完成，请等待3秒钟") {
-    echo $msg;
-    echo"<meta http-equiv=refresh content=3;url='".$url."'> ";
+   echo $msg;
+    echo"<meta http-equiv=refresh content=0;url='".$url."'> ";
+    /*echo "<script> window.location.href=".$url."</script>";*/
 }
 
 //select * from 表 where ... order by 字段 desc limit 0,5;  6,5
@@ -49,6 +64,21 @@ function coun_rows($sql){
     $result = mysql_query($sql);
     $row = mysql_fetch_array($result);
    return $row;
+}
+
+function fetch_all($sql){
+    $result = mysql_query($sql);
+    while($row = mysql_fetch_array($result)){
+        $array[] = $row;
+    }
+    return $array;
+}
+
+//返回一条查询语句
+function fetch_one($sql){
+    $result = mysql_query($sql);
+    $row = mysql_fetch_array($result);
+    return $row;
 }
 
 

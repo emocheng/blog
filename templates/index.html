@@ -16,7 +16,7 @@
         <div id="menu">
             <ul>
                 <li><a href="index.php">日志首页</a></li>
-                <li><a href="add.php">撰写日志</a></li>
+                <li><a href="index.php?action=add">撰写日志</a></li>
                 <li><a href="">官方网站</a></li>
             </ul>
         </div>
@@ -37,36 +37,27 @@
             -->
 
             <div>
-                <?php
-                    $result = mysql_query("select * from article order by id desc");
-                    while($row = mysql_fetch_array($result)){
+                <?php foreach($info as $v){ ?>
+                    <div class='textbox-title'>
+                    <h4>
+                    <img src='../static/images/icon_point2.gif' width='13' height='13' border='0'
+                              align='absmiddle'>
+                    <a href=index.php?action=show&id=<?php echo $v["id"]; ?>><?php echo $v["title"]; ?></a>
+                    </h4>
+                    <div class='textbox-label'>
 
-                        echo "<div class='textbox-title'>";
-                        echo"<h4>";
-                        echo"<img src='../static/images/icon_point2.gif' width='13' height='13' border='0'
-                                  align='absmiddle'>";
-                        echo"<a href='show.php?id=$row[id]'>".$row['title']."</a>";
-                        echo"</h4>";
-                        echo"<div class='textbox-label'>";
 
-                        $result2 = mysql_query("select * from category where id = '$row[cid]'");
-                        $cate = mysql_fetch_array($result2);
-                        $cate_name = $cate["name"];
 
-                        echo"[ 2014-9-12 15:30:20  | <a href='#'>".$cate_name." </a>]";
-                        echo"</div>";
-                        echo"</div>";
-                        echo"<div class='textbox-content'>".$row['content']."</div>";
-                        echo"<div class='textbox-bottom'>";
-                        echo"[ 管理：<a href='edit.php?id=$row[id]'>编辑</a> <a href='index.php?action=del_art&del_id=$row[id]'>删除</a> ]";
-                        $num = num_rows("select * from comm where aid=$row[id]");
-                        $num1 = coun_rows("select * from article where id=$row[id]");
-                        $views = $num1["views"];
-                        echo"| <a href='show.php?id=$row[id]'>评论:".$num."</a> | 浏览:".$views;
-                        echo"</div>";
+                    [ 2014-9-12 15:30:20  | <a href='#'><?php echo $v["cate"]; ?> </a>]
+                    </div>
+                    </div>
+                    <div class='textbox-content'><?php echo $v["content"]; ?></div>
+                   <div class='textbox-bottom'>
+                    [ 管理：<a href=index.php?action=edit&id=<?php echo $v["id"]; ?> >编辑</a> <a href=index.php?action=del_art&del_id=<?php echo $v["id"];?>>删除 </a> ]
 
-                    }
-                 ?>
+                    | <a href=show.php?id=<?php echo $v["id"]; ?>>评论:<?php echo $v["comm"];?></a> | 浏览: <?php echo $v["views"];?>
+                    </div>
+                <?php } ?>
             </div>
             <!--
             <div class="article-bottom">
@@ -85,14 +76,9 @@
                     <div class="panel-content">
 
 
-                        <?php
-                        $num_rizhi = num_rows("select * from article");
-                        $num_pinglun =num_rows("select * from comm");
-                       $num_sum = mysql_fetch_array(mysql_query("select sum(views) as s from article "));
-                        echo"日志总数：<span style='color:#CC9933'>".$num_rizhi."</span><br />";
-                        echo"阅读总数：<span style='color:#6699FF'>".$num_sum["s"]."</span><br />";
-                        echo"评论总数：<span style='color:#FF9900'>".$num_pinglun."</span><br />";
-                        ?>
+                        日志总数：<span style='color:#CC9933'><?php echo $count["num_rizhi"]; ?></span><br />
+                        阅读总数：<span style='color:#6699FF'><?php echo $count["num_sum"]; ?></span><br />
+                        评论总数：<span style='color:#FF9900'><?php echo $count["num_pinglun"]; ?></span><br />
 
 
                     </div>
@@ -114,23 +100,20 @@
                         </li>
 
 
-                        <?php
-                       $result = mysql_query("select * from category");
+                        <?php foreach($cat as $v){ ?>
+                                <li>
+                                <img src='../static/images/folder.gif' width='18' height='18'
+                                         border='0'  align='absmiddle'>
+                                <a href='#'><?php echo $v["name"]; ?></a>
+                                 <span><?php
+                                    $a = num_rows("select * from article where cid='$v[id]'");
+                                    echo $a;
+                                  ?></span>
+                                <a href=index.php?action=del_cate&del_id=<?php echo $v["id"]; ?>><img src='../static/images/del.gif' style='cursor:pointer' width='20'
+                                        height='20' border='0'></a>
+                                </li>
 
-
-                           while($row = mysql_fetch_array($result)){
-                           $num2 = num_rows("select * from article where cid=$row[id]");
-
-                                echo "<li>";
-                                echo "<img src='../static/images/folder.gif' width='18' height='18'
-                                         border='0'  align='absmiddle'>";
-                                echo "<a href='#'>".$row['name']."</a>";
-                                echo " <span>".$num2."</span>";
-                                echo " <a href='index.php?action=del_cate&del_id=$row[id]'><img src='../static/images/del.gif' style='cursor:pointer' width='20'
-                                        height='20' border='0'></a>";
-                                echo "</li>";
-                            }
-                        ?>
+                        <?php } ?>
                     </ul>
                 </div>
             </div>
@@ -138,21 +121,17 @@
                 <h5 >最新日志</h5>
                 <div class="panel-content">
                     <ul>
-                        <?php
-                            $result = mysql_query("select * from article order by id desc limit 0,5");
-                            while($row = mysql_fetch_array($result)){
-						echo"<li>";
-                        echo"<img src='../static/images/icon_ctb.gif' width='11' height='11' border='0'  align='absmiddle'/>";
-                        echo"<a href='#' >".$row['title']."</a>";
-                        echo"<sup style='color:silver;font-size:12px'>";
-                        $num = num_rows("select * from comm where aid=$row[id]");
-                        $num1 = coun_rows("select * from article where id=$row[id]");
-                        $views = $num1["views"];
-                        echo"[<span style='color:#3366CC'>".$num."<!-- 阅读数 --></span> |<span style='color:#FF6600'>".$views."<!-- 评论数 --></span>]";
-                        echo"</sup>";
-                        echo"</li>";
-                            }
-                        ?>
+                        <?php foreach($info as $v){ ?>
+
+						<li>
+                        <img src='../static/images/icon_ctb.gif' width='11' height='11' border='0'  align='absmiddle'/>
+                        <a href='#' ><?php echo $v["title"] ?></a>
+                        <sup style='color:silver;font-size:12px'>
+                        [<span style='color:#3366CC'><?php echo $v["views"] ?><!-- 阅读数 --></span> |<span style='color:#FF6600'><?php echo $v["comm"];?><!-- 评论数 --></span>]
+                        </sup>
+                        </li>
+                           <?php }?>
+
                     </ul>
                 </div>
             </div>
@@ -160,17 +139,15 @@
                 <h5 >最新评论</h5>
                 <div class="panel-content">
                     <ul>
-                        <?php
-                            $result = mysql_query("select * from comm order by id desc limit 0,5");
-                            while($row = mysql_fetch_array($result)){
-                            echo"<li>";
-                        echo"<img src='../static/images/Comment.gif' width='9'
-                                  height='9' border='0' align='absmiddle'>";
-                        echo"<a href='#'> <span style='color:#3366CC'>".$row['author']."</span></a>";
-                        echo"<a href='#' >".$row['content']."</a>";
-                        echo"</li>";
-                        }
-                        ?>
+                        <?php foreach($comm as $k){ ?>
+                            <li>
+                            <img src='../static/images/Comment.gif' width='9'
+                                      height='9' border='0' align='absmiddle'>
+                            <a href='#'> <span style='color:#3366CC'><?php echo $k["author"] ?></span></a>
+                            <a href='#' ><?php echo $k["content"] ?></a>
+                            </li>
+                        <?php } ?>
+
                     </ul>
                 </div>
             </div> 
