@@ -14,26 +14,6 @@ function index(){
         echo $name;
     }
 
-//删除文章及评论
-    if(isset($_GET["action"]) && $_GET["action"]=="del_art"){
-        $del_id = $_GET["del_id"];
-        mysql_query("delete from article where id='$del_id'");
-        mysql_query("delete from comm where aid='$del_id'");
-    }
-
-//删除栏目，文章，评论
-    if(isset($_GET["action"]) && $_GET["action"]=="del_cate"){
-        $del_id = $_GET["del_id"];  //当前要删除栏目的id
-        mysql_query("delete from category where id = '$del_id'");
-        mysql_query("delete from article where aid = '$del_id'");
-
-        //查询当前栏目下所有文章的id.
-        $res = mysql_query("select id from article where cid = '$del_id'");
-        while($r = mysql_fetch_array($res)){
-            mysql_query("delete from comm where aid = '$r[id]'");
-        }
-    }
-
     //获取统计信息；
     $count = count_info();
     //获取文章
@@ -43,6 +23,30 @@ function index(){
     //获取评论
     $comm = comm();
     require("templates/index.html");
+}
+
+//删除文章及评论
+function del_art(){
+    $del_id = $_GET["del_id"];
+    mysql_query("delete from article where id='$del_id'");
+    mysql_query("delete from comm where aid='$del_id'");
+
+    jump("http://127.0.0.1/index.php","恭喜您修改成功!请等待3秒钟跳转首页");
+}
+
+//删除栏目，文章，评论
+function del_cate(){
+    $del_id = $_GET["del_id"];  //当前要删除栏目的id
+    mysql_query("delete from category where id = '$del_id'");
+    mysql_query("delete from article where aid = '$del_id'");
+
+    //查询当前栏目下所有文章的id.
+    $res = mysql_query("select id from article where cid = '$del_id'");
+    while($r = mysql_fetch_array($res)){
+        mysql_query("delete from comm where aid = '$r[id]'");
+    }
+
+    jump("http://127.0.0.1/index.php","恭喜您修改成功!请等待3秒钟跳转首页");
 }
 
 function del_comm(){
