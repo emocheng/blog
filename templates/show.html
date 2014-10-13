@@ -6,6 +6,8 @@
     <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<script type="text/javascript" src="jquery-2.1.1.js"></script>
+
 <div id="header">
     <div id="innerHeader">
         <div id="blogLogo"></div>
@@ -51,6 +53,7 @@
             <div id="comments">
 
                 <?php
+
                     if($show_comm){
                 foreach ($show_comm as $k){ ?>
                      <div class='commentbox'>
@@ -66,7 +69,11 @@
             <div id="comment">
                 <div id="result" class="result none"></div>
 
-                <form method="post" id="form1" >
+
+
+
+
+
                     <table cellpadding=3 cellspacing=3 width="450px">
                         <tr>
                             <td class="tRight tTop"></td>
@@ -81,15 +88,49 @@
                             <td class="center">
                                 <input type="hidden" name="ajax" value="1">
                                 <input type="hidden" name="module" value="Blog">
-                                <textarea cols="70" rows="6" name="a"></textarea>
+                                <textarea cols="70" rows="6" name="a" class="area"></textarea>
                                 <br />
                                 <div class="fLeft hMargin">
-                                    <input type="submit" value="发表评论" class="submit small">
+                                    <input type="submit" value="发表评论" class="submit_small">
                                 </div>
                             </TD>
                         </tr>
                     </TABLE>
-                </form>
+
+                <script>
+                    $(function(){
+                        $(".submit_small").click(function(){
+                            var author = $(".text").val();
+                            var area = $(".area").val();
+                            $.post("index.php?action=comm_new", {
+                                author : author,
+                                area : area,
+                                aid : <?php echo $id; ?>
+                            },function(data){
+                                console.log(data);
+
+                            var html = "<div class='commentbox'>";
+
+                             html+="<div class='commentbox-title'> <a>"+author+"</a> 发表的评论 <span style='color:gray'>[ 2014-9-11 15:20:20 ]</span>";
+                            html+="<a href='index.php?id="+<?php echo $id; ?>+"&action=del_comm&del_id="+data.id+"'>删除评论</a></div>";
+                            html+="<div class=commentbox-content>"+area+"</div>";
+                            html+="</div>";
+                            $("#comments").append(html);
+
+                            }, "json" )
+
+                        })
+
+                    })
+
+                </script>
+
+
+
+
+
+
+
 
             </div>
         </div>
@@ -156,8 +197,10 @@
             <div id="panelSearch" class="panel">
                 <h5 >最新评论</h5>
                 <div class="panel-content">
+
                     <ul>
                         <?php foreach($comm as $k){ ?>
+
                         <li>
                             <img src='../static/images/Comment.gif' width='9'
                                  height='9' border='0' align='absmiddle'>
@@ -167,6 +210,7 @@
                         <?php } ?>
 
                     </ul>
+
                 </div>
             </div>
         </div>

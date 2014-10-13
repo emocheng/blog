@@ -11,7 +11,7 @@
  * @return array
  */
 function get_info(){
-    $info = fetch_all("select * from article order by id desc");
+    $info = fetch_all("select * from article  order by id desc limit 0,5");
     foreach($info as $k=>$v){
         $cate = fetch_one("select name from category where id = '$v[cid]'");
         $info[$k]["cate"] = $cate["name"];

@@ -68,10 +68,12 @@ function coun_rows($sql){
 
 function fetch_all($sql){
     $result = mysql_query($sql);
+    $array = array(); //定义一个空数组。。防止下面return数组时数组内没有值报错。
     while($row = mysql_fetch_array($result)){
         $array[] = $row;
     }
     return $array;
+
 }
 
 //返回一条查询语句

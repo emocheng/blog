@@ -6,6 +6,8 @@
     <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+
+<script type="text/javascript" src="jquery-2.1.1.js"></script>
 <div id="header">
     <div id="innerHeader">
         <div id="blogLogo"></div>
@@ -36,7 +38,7 @@
             </div>
             -->
 
-            <div>
+            <div class="ajax">
                 <?php foreach($info as $v){ ?>
                     <div class='textbox-title'>
                     <h4>
@@ -45,8 +47,6 @@
                     <a href=index.php?action=show&id=<?php echo $v["id"]; ?>><?php echo $v["title"]; ?></a>
                     </h4>
                     <div class='textbox-label'>
-
-
 
                     [ 2014-9-12 15:30:20  | <a href='#'><?php echo $v["cate"]; ?> </a>]
                     </div>
@@ -59,6 +59,38 @@
                     </div>
                 <?php } ?>
             </div>
+            <div><input type="button" class="btn" value="查看更多文章"></div>
+                <script>
+                    $(function(){
+                        var num = 1;
+                        $(".btn").click(function(){
+
+                            $.post("index.php?action=page", {
+                                num : num
+                            },function(data){
+                                console.log(data);
+                                $.each(data,function(k,v){
+                                var html= "<div class='textbox-title'><h4><img src='../static/images/icon_point2.gif'"
+                                    html+="width='13' height='13' border='0' align='absmiddle'>"
+                                    html+="<a href=index.php?action=show&id="+ v.id+">"+ v.title+"</a>"
+                                    html+="</h4><div class='textbox-label'>[ 2014-9-12 15:30:20  | <a href='#'>"+ v.cate
+                                    html+="</a>]</div></div><div class='textbox-content'>"+ v.content+"</div>"
+                                    html+="<div class='textbox-bottom'>"
+                                    html+="[ 管理：<a href=index.php?action=edit&id="+ v.id+">编辑</a>"
+                                    html+="<a href=index.php?action=del_art&del_id="+ v.id+">删除 </a> ]"
+                                    html+="| <a href=show.php?id="+ v.id+">评论:"+ v.comm+"</a> | 浏览:"+ v.views
+                                    $(".ajax").append(html);
+                                })
+
+                            }, "json")
+
+                            num++
+                        })
+
+                    })
+
+                </script>
+
             <!--
             <div class="article-bottom">
                 <div class="pages">{$page}

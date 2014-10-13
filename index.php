@@ -8,6 +8,9 @@ $action();
 
 //首页
 function index(){
+
+
+
     if($_POST){
         $name = $_POST["name"];
         mysql_query("insert into category (name) values ('$name')");
@@ -24,6 +27,23 @@ function index(){
     $comm = comm();
     require("templates/index.html");
 }
+
+//数据分页
+function page(){
+    $num = $_POST["num"];
+    $p = $num*5;
+    $res = fetch_all("select * from article  order by id desc limit $p,5");
+    foreach($res as $k=>$v){
+        $cate = fetch_one("select name from category where id = '$v[cid]'");
+        $res[$k]["cate"] = $cate["name"];
+
+        $comm = num_rows("select * from comm where aid = '$v[id]' ");
+        $res[$k]["comm"] = $comm;
+    }
+
+    echo json_encode($res);
+}
+
 
 //删除文章及评论
 function del_art(){
@@ -76,13 +96,7 @@ function show(){
         mysql_query("delete from comm where id='$del_id'");
     }
 
-    if($_POST){
-        $author = $_POST["author"];
-        $a = $_POST["a"];
-        $aid = $id;
-        mysql_query("insert into comm (author,content,aid)
-	values ('$author', '$a','$aid')");
-    }
+
     $show_comm = show_comm($id);
     mysql_query("update article set views = views+1 where id = '$id'");
 
@@ -92,6 +106,21 @@ function show(){
     $comm = comm();
 
     require("templates/show.html");
+}
+
+function comm_new(){
+
+    $author = $_POST["author"];
+    $area = $_POST["area"];
+    $aid = $_POST["aid"];
+    mysql_query("insert into comm (author,content,aid)
+	values ('$author', '$area','$aid')");
+    $id =mysql_insert_id();
+    $array = array();
+    $array["author"] = $author;
+    $array["area"] = $area;
+    $array["id"] = $id;
+    echo json_encode($array);
 }
 
 
