@@ -6,6 +6,7 @@
     <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+<script type="text/javascript" src="../jquery-2.1.1.js"></script>
 <div id="header">
     <div id="innerHeader">
         <div id="blogLogo"></div>
@@ -28,7 +29,7 @@
 <div id="mainWrapper">
     <div id="content" class="content">
         <div id="innerContent">
-           
+
             <div class="commentbox">
                 <table cellpadding=3 cellspacing=3 width="680px" >
                     <tr>
@@ -50,13 +51,9 @@
                                         <td class="tRight tTop" >类别：</td>
                                         <td class="tLeft">
                                             <select NAME="cid" class="medium text">
-                                                <?php
-
-                                                $result2 = mysql_query("select * from category");
-                                                while($cate = mysql_fetch_array($result2)){
-                                                echo "<OPTION VALUE='$cate[id]'>".$cate['name'];
-                                                }
-                                                ?>
+                                                {{foreach $result2 as $v}}
+                                                <OPTION VALUE={{$v.id}}>{{$v.name}}
+                                                    {{/foreach}}
                                             </select>
                                         </td>
                                     </tr>
@@ -64,7 +61,7 @@
                                         <td class="tRight tTop" >日志：</td>
                                         <td class="tLeft"><textarea name="content" id="textContent" cols="45" rows="5"></textarea></td>
                                     </tr>
-                                   
+
                                     <tr>
                                         <td ></td>
                                         <td class="center">
@@ -77,12 +74,25 @@
                                     </tr>
                                 </table>
                             </form>
-                            
+
                         </td>
                     </tr>
                 </table>
             </div>
         </div>
+        <script src="../include/ckeditor/ckeditor.js"></script>
+        <script src="../include/ckfinder/ckfinder.js"></script>
+        <script>
+            CKEDITOR.replace('textContent',
+                    {
+                        filebrowserBrowseUrl: '../include/ckfinder/ckfinder.html',
+                        filebrowserImageBrowseUrl: '../include/ckfinder/ckfinder.html?type=Images',
+                        filebrowserFlashBrowseUrl: '../include/ckfinder/ckfinder.html?type=Flash',
+                        filebrowserUploadUrl: '../include/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                        filebrowserImageUploadUrl: '../include/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+                        filebrowserFlashUploadUrl: '../include/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+                    });
+        </script>
 
 <div id="footer" class="footer" >
     <div id="innerFooter">Powered by 武汉长乐教育 |  <a target="_blank" href="http://www.whphp.com">whphp</a></div>

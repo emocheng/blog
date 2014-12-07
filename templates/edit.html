@@ -43,7 +43,7 @@
                                         <td class="tRight tTop" width="20%">标题：</td>
                                         <td class="tLeft">
                                             <input TYPE="text" class="huge text" check='Require'
-                                                   warning="标题不能为空" NAME="title" value="<?php echo $row['title'] ?>">
+                                                   warning="标题不能为空" NAME="title" value="{{$result.title}}">
 
                                         </td>
                                     </tr>
@@ -52,16 +52,16 @@
                                         <td class="tLeft">
                                             <select NAME="cid" class="medium text">
 
-                                                <?php
-
-                                                $result2 = mysql_query("select * from category");
-                                                while($cate = mysql_fetch_array($result2)){
-                                                echo "<OPTION VALUE='$cate[id]'>".$cate['name'];
-
-                                                }
 
 
-                                                ?>
+                                                {{foreach $result2 as $v}}
+
+                                                <OPTION VALUE={{$v.id}}>{{$v.name}}
+                                                {{/foreach}}
+
+
+
+
                                             </select>
                                         </td>
                                     </tr>
@@ -69,7 +69,7 @@
                                         <td class="tRight tTop" >日志：</td>
                                         <td class="tLeft">
                                             <textarea name="content" id="textContent" cols="45" rows="5">
-                                                <?php echo $row['content']; ?>
+                                                {{$result.content}}
 
                                             </textarea></td>
                                     </tr>

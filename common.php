@@ -3,23 +3,45 @@
 require("config.php");
 
 //项目路径
-defined("ROOT_PATH") or define("ROOT_PATH", getcwd());
+defined("APP_PATH") or define("APP_PATH", getcwd());
 
-//模板路径
-defined("TEMPLATE_PATH") or define("TEMPLATE_PATH", ROOT_PATH."/templates/");
 
-defined("SITE_URL") or define("SITE_URL", "http://".$_SERVER['HTTP_HOST']);
-/* 定义常量 end */
+// smarty 配置
+require('include/smarty/Smarty.class.php');
+
+class My_Smarty extends Smarty {
+    function __construct()
+    {
+        parent::__construct();
+
+        //模板的路径
+        $this->setTemplateDir(APP_PATH.'/templates/');
+
+        //编译模板位置
+        $this->setCompileDir(APP_PATH.'/templates/templates_c/');
+
+        //配置文件路径
+        $this->setConfigDir(APP_PATH.'/templates/configs/');
+
+        //缓存路径
+        $this->setCacheDir(APP_PATH.'/templates/cache/');
+
+        $this->left_delimiter = "{{";
+        $this->right_delimiter = "}}";
+    }
+}
+
+$s = new My_Smarty();
 
 
 //连接数据库操作
-$con = mysql_connect($config["host"],$config["db_name"],$config["db_passwd"]);
-if(!$con){
-	die("无法连接大到数据库");
+$mysqli= new mysqli($config["host"],$config["db_name"],$config["db_passwd"],$config["form_name"]);
+if(mysqli_connect_error()){
+
+    exit("连接失败：%s<br>".mysqli_connect_error());
 }
 
-mysql_query("set names utf8");
-mysql_select_db('my_blog');
+$mysqli->query("set names utf8");
 
 /**
  * 调试函数
@@ -48,12 +70,29 @@ function jump($url, $msg="操作已经完成，请等待3秒钟") {
 //select * from 表 where ... order by 字段 desc limit 0,5;  6,5
 
 
+function A($a,$b){
+    global $s;
+    return $s->assign($a,$b);
+}
+
+function D($a){
+    global $s;
+    return $s->display($a);
+}
+
+function Q($sql){
+    global $mysqli;
+    return $mysqli->query($sql);
+
+}
+
+
 /*
  * 查询记录条数。。首页评论数调用
  * */
 function num_rows($sql){
-    $result = mysql_query($sql);
-    $num = mysql_num_rows($result);
+    $result = Q($sql);
+    $num = $result->num_rows;
     return $num;
 }
 
@@ -61,15 +100,15 @@ function num_rows($sql){
  * 查询单条记录。。首页浏览数调用
  * */
 function coun_rows($sql){
-    $result = mysql_query($sql);
-    $row = mysql_fetch_array($result);
+    $result = Q($sql);
+    $row = $result->fetch_array();
    return $row;
 }
 
 function fetch_all($sql){
-    $result = mysql_query($sql);
+    $result = Q($sql);
     $array = array(); //定义一个空数组。。防止下面return数组时数组内没有值报错。
-    while($row = mysql_fetch_array($result)){
+    while($row = $result->fetch_array()){
         $array[] = $row;
     }
     return $array;
@@ -78,8 +117,8 @@ function fetch_all($sql){
 
 //返回一条查询语句
 function fetch_one($sql){
-    $result = mysql_query($sql);
-    $row = mysql_fetch_array($result);
+    $result = Q($sql);
+    $row = $result->fetch_array();
     return $row;
 }
 

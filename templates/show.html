@@ -35,53 +35,48 @@
                 <h4>
                 <img src='../static/Images/icon_ctb.gif' width='11' height='11' border='0'
                               align='absmiddle'>
-                <?php echo $content['title']; ?>
+                {{$content.title}}
                </h4>
                 <div style='margin-top:20px;'>
                 </div>
                 <div class='textbox-label'>
-                [<span style='color:gray;font-weight:normal'>2015-9-16 15:33:33 发表在 <a href='#'><?php echo $content["cate_name"]; ?></span>  ]
+                [<span style='color:gray;font-weight:normal'>2015-9-16 15:33:33 发表在 <a href='#'>{{$content.cate_name}}</span>  ]
                 </div>
                 </div>
                 <div class='textbox-content'>
-                <?php echo $content['content']; ?>
+                {{$content.content}}
                 </div>
             <div class="textbox-bottom"> <img src="../static/images/cm_t_ArtRank2.gif" width="12" height="12" border="0"  align=""> <a href="#reply">我有话要说</a></div>
             <div class="textbox-urls" align="right"></div>
-            <div class="no-comment-box"> [ 管理：<a href=index.php?action=edit&id=<?php echo $content["id"];?> >编辑日志</a>
-                <a href=index.php?action=del_art&del_id=<?php echo $content["id"];?>>删除日志</a> ]</div>
+            <div class="no-comment-box"> [ 管理：<a href=index.php?action=edit&id={{$content.id}}>编辑日志</a>
+                <a href=index.php?action=del_art&del_id={{$content.id}}>删除日志</a> ]</div>
             <div id="comments">
-
-                <?php
-
-                    if($show_comm){
-                foreach ($show_comm as $k){ ?>
+        {{foreach $show_comm as $k}}
                      <div class='commentbox'>
 
-                        <div class='commentbox-title' > <a><?php echo $k["author"]; ?></a> 发表的评论 <span style='color:gray'>[ 2014-9-11 15:20:20 ]</span>
-                       <a href=index.php?id=<?php echo $id; ?>&action=del_comm&del_id=<?php echo $k["id"] ?>>删除评论</a></div>
-                        <div class='commentbox-content'><?php echo $k["content"]; ?></div>
+                        <div class='commentbox-title' > <a>{{$k.author}}</a> 发表的评论 <span style='color:gray'>[ 2014-9-11 15:20:20 ]</span>
+
+                         <a href=index.php?id={{$id}}&action=del_comm&del_id={{$k.id}}>删除评论</a></div>
+                        <div class='commentbox-content'>{{$k.content}}</div>
                         </div>
-                <?php } }?>
+                {{/foreach}}
+
 
             </div>
             <a name="reply"></a>
             <div id="comment">
                 <div id="result" class="result none"></div>
-
-
-
-
-
-
                     <table cellpadding=3 cellspacing=3 width="450px">
                         <tr>
                             <td class="tRight tTop"></td>
-                            <td class="tLeft">用户名：<input type="text" namE="author" class="text"></td>
+                            <td>用户名：<input type="text" name="author" class="text"></td>
+                            <td><input type="button" value="选择图片" onclick="BrowseServer('thumb1','img_show1')"/></td>
+                            <td><input type="hidden" id="thumb1" class="span5" name="thumb"></td>
+                            <td><img src="" id="img_show1" width="90px" height="90px" /></td>
                         </tr>
                         <tr>
                             <td class="tRight tTop"></td>
-                            <td class="tLeft"><html:editor type="ubb"  id="editor" width="450px" height="185px" name="content"></html:editor></td>
+
                         </tr>
                         <tr>
                             <td ></td>
@@ -96,23 +91,38 @@
                             </TD>
                         </tr>
                     </TABLE>
-
+                <script src="../include/ckeditor/ckeditor.js"></script>
+                <script src="../include/ckfinder/ckfinder.js"></script>
                 <script>
+                    function BrowseServer(thumb,img_show) {
+                        var finder = new CKFinder();
+
+                        //当选中图片时执行的函数
+                        finder.selectActionFunction = function(fileUrl){
+                            $("#"+thumb).val(fileUrl);
+                            $("#"+img_show).attr("src",""+fileUrl+"");
+                        }
+
+                        finder.popup();//调用窗口
+                    }
                     $(function(){
+
                         $(".submit_small").click(function(){
                             var author = $(".text").val();
                             var area = $(".area").val();
+                            var img = $("#thumb1").val();
                             $.post("index.php?action=comm_new", {
                                 author : author,
                                 area : area,
-                                aid : <?php echo $id; ?>
+                                aid : {{$id}},
+                                img : img
                             },function(data){
                                 console.log(data);
 
                             var html = "<div class='commentbox'>";
 
                              html+="<div class='commentbox-title'> <a>"+author+"</a> 发表的评论 <span style='color:gray'>[ 2014-9-11 15:20:20 ]</span>";
-                            html+="<a href='index.php?id="+<?php echo $id; ?>+"&action=del_comm&del_id="+data.id+"'>删除评论</a></div>";
+                            html+="<a href='index.php?id="+{{$id}}+"&action=del_comm&del_id="+data.id+"'>删除评论</a></div>";
                             html+="<div class=commentbox-content>"+area+"</div>";
                             html+="</div>";
                             $("#comments").append(html);
@@ -125,13 +135,6 @@
 
                 </script>
 
-
-
-
-
-
-
-
             </div>
         </div>
 
@@ -142,9 +145,9 @@
                 <div id="panelStats" class="panel">
                     <h5>统计数据</h5>
                     <div class="panel-content">
-                        日志总数：<span style='color:#CC9933'><?php echo $count["num_rizhi"]; ?></span><br />
-                        阅读总数：<span style='color:#6699FF'><?php echo $count["num_sum"]; ?></span><br />
-                        评论总数：<span style='color:#FF9900'><?php echo $count["num_pinglun"]; ?></span><br />
+                        日志总数：<span style='color:#CC9933'>{{$count.num_rizhi}}</span><br />
+                        阅读总数：<span style='color:#6699FF'>{{$count.num_sum}}</span><br />
+                        评论总数：<span style='color:#FF9900'>{{$count.num_pinglun}}</span><br />
                     </div>
                 </div>
                 <h5 >日志分类 </h5>
@@ -159,20 +162,18 @@
                                 <br style="clear:both;float:auto"/>
                             </form>
                         </li>
-                        <?php foreach($cat as $v){ ?>
+                        {{foreach $cat as $v}}
                         <li>
                             <img src='../static/images/folder.gif' width='18' height='18'
                                  border='0'  align='absmiddle'>
-                            <a href='#'><?php echo $v["name"]; ?></a>
-                                 <span><?php
-                                    $a = num_rows("select * from article where cid=$v[id]");
-                                    echo $a;
-                                  ?></span>
-                            <a href=index.php?action=del_cate&del_id=<?php echo $v["id"]; ?>><img src='../static/images/del.gif' style='cursor:pointer' width='20'
-                                                                                                  height='20' border='0'></a>
+                            <a href='#'>{{$v.name}}</a>
+                                 <span>
+                                    {{$v.cat_num}}
+                                  </span>
+                            <a href=index.php?action=del_cate&del_id={{$v.id}}><img src='../static/images/del.gif' style='cursor:pointer' width='20'
+                                                                                    height='20' border='0'></a>
                         </li>
-
-                        <?php } ?>
+                       {{/foreach}}
                     </ul>
                 </div>
             </div>
@@ -180,16 +181,16 @@
                 <h5 >最新日志</h5>
                 <div class="panel-content">
                     <ul>
-                        <?php foreach($info as $v){ ?>
+                        {{foreach $info as $v}}
 
                         <li>
                             <img src='../static/images/icon_ctb.gif' width='11' height='11' border='0'  align='absmiddle'/>
-                            <a href='#' ><?php echo $v["title"] ?></a>
+                            <a href='#' >{{$v.title}}</a>
                             <sup style='color:silver;font-size:12px'>
-                                [<span style='color:#3366CC'><?php echo $v["views"] ?><!-- 阅读数 --></span> |<span style='color:#FF6600'><?php echo $v["comm"];?><!-- 评论数 --></span>]
+                                [<span style='color:#3366CC'>{{$v.views}}<!-- 阅读数 --></span> |<span style='color:#FF6600'>{{$v.comm}}<!-- 评论数 --></span>]
                             </sup>
                         </li>
-                        <?php }?>
+                        {{/foreach}}
 
                     </ul>
                 </div>
@@ -199,15 +200,15 @@
                 <div class="panel-content">
 
                     <ul>
-                        <?php foreach($comm as $k){ ?>
+                        {{foreach $comm as $k}}
 
                         <li>
                             <img src='../static/images/Comment.gif' width='9'
                                  height='9' border='0' align='absmiddle'>
-                            <a href='#'> <span style='color:#3366CC'><?php echo $k["author"] ?></span></a>
-                            <a href='#' ><?php echo $k["content"] ?></a>
+                            <a href='#'> <span style='color:#3366CC'>{{$k.author}}</span></a>
+                            <a href='#' >{{$k.content}}</a>
                         </li>
-                        <?php } ?>
+                        {{/foreach}}
 
                     </ul>
 

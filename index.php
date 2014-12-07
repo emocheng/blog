@@ -4,7 +4,7 @@ require("model.php");
 
 $action = isset($_GET["action"]) ? $_GET["action"] : "index";
 
-$action();
+$action($s);
 
 //首页
 function index(){
@@ -13,7 +13,7 @@ function index(){
 
     if($_POST){
         $name = $_POST["name"];
-        mysql_query("insert into category (name) values ('$name')");
+        Q("insert into category (name) values ('$name')");
         echo $name;
     }
 
@@ -25,22 +25,20 @@ function index(){
     $cat = cat_info();
     //获取评论
     $comm = comm();
-    require("templates/index.html");
+
+    A("count", $count);
+    A("info", $info);
+    A("cat", $cat);
+    A("comm", $comm);
+    D("index.html");
+
+
 }
 
 //数据分页
 function page(){
     $num = $_POST["num"];
-    $p = $num*5;
-    $res = fetch_all("select * from article  order by id desc limit $p,5");
-    foreach($res as $k=>$v){
-        $cate = fetch_one("select name from category where id = '$v[cid]'");
-        $res[$k]["cate"] = $cate["name"];
-
-        $comm = num_rows("select * from comm where aid = '$v[id]' ");
-        $res[$k]["comm"] = $comm;
-    }
-
+    $res = do_page($num);
     echo json_encode($res);
 }
 
@@ -48,23 +46,16 @@ function page(){
 //删除文章及评论
 function del_art(){
     $del_id = $_GET["del_id"];
-    mysql_query("delete from article where id='$del_id'");
-    mysql_query("delete from comm where aid='$del_id'");
+    Q("delete from article where id='$del_id'");
+    Q("delete from comm where aid='$del_id'");
 
     jump("http://127.0.0.1/index.php","恭喜您修改成功!请等待3秒钟跳转首页");
 }
 
 //删除栏目，文章，评论
 function del_cate(){
-    $del_id = $_GET["del_id"];  //当前要删除栏目的id
-    mysql_query("delete from category where id = '$del_id'");
-    mysql_query("delete from article where aid = '$del_id'");
-
-    //查询当前栏目下所有文章的id.
-    $res = mysql_query("select id from article where cid = '$del_id'");
-    while($r = mysql_fetch_array($res)){
-        mysql_query("delete from comm where aid = '$r[id]'");
-    }
+    $del_id = $_GET["del_id"];  //获取栏目名
+    do_del_cate($del_id);//调用删除栏目的函数
 
     jump("http://127.0.0.1/index.php","恭喜您修改成功!请等待3秒钟跳转首页");
 }
@@ -72,13 +63,14 @@ function del_cate(){
 function del_comm(){
         $id = $_GET["id"];
         $del_id = $_GET["del_id"];
-        mysql_query("delete from comm where id='$del_id'");
+        Q("delete from comm where id='$del_id'");
         jump("http://127.0.0.1/index.php?action=show&id=".$id,"恭喜您删除成功!请等待3秒钟跳转");
 }
 
 //显示页面
 function show(){
     $id = $_GET["id"];
+
 
     /**
      * 获取show页面的栏目标签；
@@ -93,33 +85,43 @@ function show(){
 
     if(isset($_GET["action"]) &&$_GET["action"]=="del"){
         $del_id = $_GET["del_id"];
-        mysql_query("delete from comm where id='$del_id'");
+        Q("delete from comm where id='$del_id'");
     }
 
-
     $show_comm = show_comm($id);
-    mysql_query("update article set views = views+1 where id = '$id'");
+    Q("update article set views = views+1 where id = '$id'");
 
     $count = count_info();
     $info = get_info();
     $cat = cat_info();
     $comm = comm();
 
-    require("templates/show.html");
+    A("id", $id);
+    A("content", $content);
+    A("show_comm", $show_comm);
+    A("count", $count);
+    A("info", $info);
+    A("cat", $cat);
+    A("comm", $comm);
+    A("content", $content);
+
+
+    D("show.html");
 }
 
 function comm_new(){
-
+    $img = $_POST["img"];
     $author = $_POST["author"];
     $area = $_POST["area"];
     $aid = $_POST["aid"];
-    mysql_query("insert into comm (author,content,aid)
-	values ('$author', '$area','$aid')");
+    Q("insert into comm (author,content,aid,img)
+	values ('$author', '$area','$aid','$img')");
     $id =mysql_insert_id();
     $array = array();
     $array["author"] = $author;
     $array["area"] = $area;
     $array["id"] = $id;
+    $array["img"] = $img;
     echo json_encode($array);
 }
 
@@ -128,32 +130,37 @@ function comm_new(){
 function edit(){
 
     $id = $_GET["id"];
-    $result = mysql_query("select * from article where id = $id");
-    $row = mysql_fetch_array($result);
+    $result = fetch_one("select * from article where id = $id");
+
+    $result2 = fetch_all("select * from category");
 
     if($_POST){
         $title = $_POST["title"];
         $content = $_POST["content"];
         $cid = $_POST["cid"];
-        mysql_query("update article set title='$title',content='$content',cid='$cid' where id = $id");
+        Q("update article set title='$title',content='$content',cid='$cid' where id = $id");
         jump("http://127.0.0.1/index.php","恭喜您修改成功!请等待3秒钟跳转首页");
     }
 
-    require("templates/edit.html");
+    A("result", $result);
+    A("result2", $result2);
+    D("edit.html");
 }
 
 //添加文章
 function add(){
+    $result2 = fetch_all("select * from category");
     if($_POST){
         $title = $_POST["title"];
         $content = $_POST["content"];
         $cid = $_POST["cid"];
-        mysql_query("insert into article (title,content,cid)
+        Q("insert into article (title,content,cid)
 	values ('$title', '$content','$cid')");
         jump("http://127.0.0.1/index.php","恭喜您修改成功!请等待3秒钟跳转首页");
     }
 
-    require("templates/add.html");
+    A("result2",$result2);
+    D("add.html");
 
 }
 

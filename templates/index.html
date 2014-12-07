@@ -39,25 +39,25 @@
             -->
 
             <div class="ajax">
-                <?php foreach($info as $v){ ?>
+                {{foreach $info as $v}}
                     <div class='textbox-title'>
                     <h4>
                     <img src='../static/images/icon_point2.gif' width='13' height='13' border='0'
                               align='absmiddle'>
-                    <a href=index.php?action=show&id=<?php echo $v["id"]; ?>><?php echo $v["title"]; ?></a>
+                    <a href=index.php?action=show&id={{$v["id"]}}>{{$v.title}}</a>
                     </h4>
                     <div class='textbox-label'>
 
-                    [ 2014-9-12 15:30:20  | <a href='#'><?php echo $v["cate"]; ?> </a>]
+                    [ 2014-9-12 15:30:20  | <a href='#'>{{$v.cate}} </a>]
                     </div>
                     </div>
-                    <div class='textbox-content'><?php echo $v["content"]; ?></div>
+                    <div class='textbox-content'>{{$v.content}}</div>
                    <div class='textbox-bottom'>
-                    [ 管理：<a href=index.php?action=edit&id=<?php echo $v["id"]; ?> >编辑</a> <a href=index.php?action=del_art&del_id=<?php echo $v["id"];?>>删除 </a> ]
+                    [ 管理：<a href=index.php?action=edit&id={{$v.id}} >编辑</a> <a href=index.php?action=del_art&del_id={{$v.id}}>删除 </a> ]
 
-                    | <a href=show.php?id=<?php echo $v["id"]; ?>>评论:<?php echo $v["comm"];?></a> | 浏览: <?php echo $v["views"];?>
+                    | <a href=show.php?id={{$v.id}}>评论:{{$v.comm}}</a> | 浏览: {{$v.views}}
                     </div>
-                <?php } ?>
+                {{/foreach}}
             </div>
             <div><input type="button" class="btn" value="查看更多文章"></div>
                 <script>
@@ -108,9 +108,9 @@
                     <div class="panel-content">
 
 
-                        日志总数：<span style='color:#CC9933'><?php echo $count["num_rizhi"]; ?></span><br />
-                        阅读总数：<span style='color:#6699FF'><?php echo $count["num_sum"]; ?></span><br />
-                        评论总数：<span style='color:#FF9900'><?php echo $count["num_pinglun"]; ?></span><br />
+                        日志总数：<span style='color:#CC9933'>{{$count.num_rizhi}}</span><br />
+                        阅读总数：<span style='color:#6699FF'>{{$count.num_sum}}</span><br />
+                        评论总数：<span style='color:#FF9900'>{{$count.num_pinglun}}</span><br />
 
 
                     </div>
@@ -132,20 +132,17 @@
                         </li>
 
 
-                        <?php foreach($cat as $v){ ?>
+                        {{foreach $cat as $v}}
                                 <li>
                                 <img src='../static/images/folder.gif' width='18' height='18'
                                          border='0'  align='absmiddle'>
-                                <a href='#'><?php echo $v["name"]; ?></a>
-                                 <span><?php
-                                    $a = num_rows("select * from article where cid='$v[id]'");
-                                    echo $a;
-                                  ?></span>
-                                <a href=index.php?action=del_cate&del_id=<?php echo $v["id"]; ?>><img src='../static/images/del.gif' style='cursor:pointer' width='20'
+                                <a href='#'>{{$v.name}}</a>
+                                 <span>{{$v.cat_num}}</span>
+                                <a href=index.php?action=del_cate&del_id={{$v.id}}><img src='../static/images/del.gif' style='cursor:pointer' width='20'
                                         height='20' border='0'></a>
                                 </li>
 
-                        <?php } ?>
+                        {{/foreach}}
                     </ul>
                 </div>
             </div>
@@ -153,16 +150,16 @@
                 <h5 >最新日志</h5>
                 <div class="panel-content">
                     <ul>
-                        <?php foreach($info as $v){ ?>
+                        {{foreach $info as $v}}
 
 						<li>
                         <img src='../static/images/icon_ctb.gif' width='11' height='11' border='0'  align='absmiddle'/>
-                        <a href='#' ><?php echo $v["title"] ?></a>
+                        <a href='#' >{{$v.title}}</a>
                         <sup style='color:silver;font-size:12px'>
-                        [<span style='color:#3366CC'><?php echo $v["views"] ?><!-- 阅读数 --></span> |<span style='color:#FF6600'><?php echo $v["comm"];?><!-- 评论数 --></span>]
+                        [<span style='color:#3366CC'>{{$v.views}}<!-- 阅读数 --></span> |<span style='color:#FF6600'>{{$v.comm}}<!-- 评论数 --></span>]
                         </sup>
                         </li>
-                           <?php }?>
+                           {{/foreach}}
 
                     </ul>
                 </div>
@@ -171,14 +168,14 @@
                 <h5 >最新评论</h5>
                 <div class="panel-content">
                     <ul>
-                        <?php foreach($comm as $k){ ?>
+                        {{foreach $comm as $k}}
                             <li>
                             <img src='../static/images/Comment.gif' width='9'
                                       height='9' border='0' align='absmiddle'>
-                            <a href='#'> <span style='color:#3366CC'><?php echo $k["author"] ?></span></a>
-                            <a href='#' ><?php echo $k["content"] ?></a>
+                            <a href='#'> <span style='color:#3366CC'>{{$k.author}}</span></a>
+                            <a href='#' >{{$k.content}}</a>
                             </li>
-                        <?php } ?>
+                        {{/foreach}}
 
                     </ul>
                 </div>
